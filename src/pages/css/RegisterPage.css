@@ -1,0 +1,10 @@
+#flex-container {
+    justify-content: space-around;
+    background: #fff;
+    margin-top: 50px;
+}
+
+#form {
+    width: 600px;
+
+}
