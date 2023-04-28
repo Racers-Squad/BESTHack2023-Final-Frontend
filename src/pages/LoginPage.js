@@ -30,7 +30,9 @@ const LoginPage = observer(() => {
 
     return (<Container id="flex-container">
         <Card id="form" className="align-items-center">
-            <h1 style={{fontSize: 50, marginBottom: 50, marginTop: 40}}>HELLO</h1>
+            <h1 style={{fontSize: 40, marginTop: 40}}>BESTHack 2023</h1>
+            <h1 style={{fontSize: 40, marginBottom: 10, marginTop: 10, textAlign:"center"}}>Investment banking technologies</h1>
+            <h1 style={{fontSize: 40, marginBottom: 20, marginTop: 10}}>Racers Squad</h1>
             <h2 className="m-auto">Вход</h2>
             <Form className="d-flex flex-column">
                 <Form.Group>

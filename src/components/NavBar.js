@@ -18,18 +18,26 @@ const NavBar = observer(() => {
     }
 
     return (
-        <Navbar bg="light" variant="light">
-            <Nav className="flex-column me-3" style={{marginLeft: 20}}>
-                {!user.isAuth && <Button variant="secondary" onClick={() => {
+        <Navbar bg="dark" variant="light" className="align-items-end">
+            <Nav className="justify-content-center me-auto" >
+                <Button variant="light" onClick={() => {
+                    history.push(MAIN_PAGE)
+                }} style={{marginLeft: 20, textDecoration: 'none'}}
+                >Main</Button></Nav>
+            <Nav
+                className="flex-column me-3" style={{float: "right"}}>
+                {!user.isAuth && <Button variant="light" onClick={() => {
                     history.push(LOGIN_PAGE)
                 }}
                                          style={{width: 80}}>Вход</Button>}
-                {user.isAuth && <div><Button variant="secondary" style={{marginLeft: 10}}
-                                             onClick={() => {
-                                                 logout()
-                                             }}>Выход</Button></div>}
+                {user.isAuth &&
+                    <div><h5 style={{float: "left", marginRight: 10, color: "white", marginTop:6}}>{user.user.email}</h5><Button variant="light"
+                                                                                                    style={{marginLeft: 10}}
+                                                                                                    onClick={() => {
+                                                                                                        logout()
+                                                                                                    }}>Выход</Button>
+                    </div>}
             </Nav>
-            <NavLink style={{color: 'black', marginLeft: 20}} to={MAIN_PAGE}>Main</NavLink>
         </Navbar>);
 });
 
