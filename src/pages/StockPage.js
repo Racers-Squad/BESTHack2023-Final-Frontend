@@ -19,9 +19,7 @@ const StockPage = () => {
     let code = window.location.href
     code = code.replace('http://localhost:3000/stock/', '')
     useLayoutEffect(() => {
-        connect()
-        sendConfig(value, curStock.code)
-        getStockByCode(code).then((data) => {
+        getStockByCode(code).then((data)=>{
             setStock(data)
         })
     }, [])
@@ -168,7 +166,7 @@ const StockPage = () => {
                 <Card style={{width: 700, height: 600}}>
                     <Col>
                         <Row className="m-lg-4">
-                            <Text h1>{price} ₽</Text>
+                            <Text h1>{50.50} ₽</Text>
                         </Row>
                     </Col>
                 </Card>
