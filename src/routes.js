@@ -11,7 +11,10 @@ export const publicRoutes = [
     },
     {
         path: REGISTER_PAGE, Component: RegisterPage
-    },
+    }
+]
+
+export const authRoutes = [
     {
         path: MAIN_PAGE, Component: MainPage
     }, {

@@ -19,7 +19,6 @@ const App = observer(() => {
                 user.setIsAuth(true)
             } else {
                 user.setUser('');
-                user.setIsAuth(true);
 
             }
         }).finally(() => {

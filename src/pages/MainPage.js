@@ -6,39 +6,41 @@ import {Col, Row} from "react-bootstrap";
 import {$host} from "../http/axiosAPI";
 import TypeBar from "../components/TypeBar";
 import {getStocksByType} from "../http/StockAPI";
-import Pagination from "../components/Pagination";
-import StockList from "../components/StockList";
+import {getModeOfData} from "../http/EisApi";
+import DataMode from "../components/DataMode";
+import ButtonMode from "../components/ButtonMode";
+import SockJS from "sockjs-client";
+import {Stomp} from "@stomp/stompjs";
 
 const MainPage = observer(() => {
     const {services, stocks} = useContext(Context)
-    const [currentPage, setCurrentPage] = useState(1)
-    const [postsPerPage, setPostsPerPage] = useState(8)
+    const [mode, setMode] = useState({mode:0, methods:''})
+    const socket = new SockJS('http://localhost:2728/ws');
+    const stompClient = Stomp.over(socket);
 
     useEffect(() => {
         $host.get('/eis/services').then((response) => {
             services.setServices(response.data)
         })
     }, [])
+    useEffect(() => {
+        stompClient.connect({}, () => {
+            console.log('STOMP connection opened.');
+        });
+    }, [services.selected]);
 
     useEffect(() => {
-        getStocksByType(services.selected).then(data => {
-            stocks.setStocks(data)
+        getModeOfData(services.selected).then(data => {
+            setMode(data)
         })
     }, [services.selected])
 
-    const lastPostIndex = currentPage * postsPerPage
-    const firstPostIndex = lastPostIndex - postsPerPage
-    const currentPosts = stocks.stocks.slice(firstPostIndex, lastPostIndex)
 
     return (<Row className="g-0">
             <Col md={1} className="mt-2" style={{width: 250}}>
                 <TypeBar/>
             </Col>
-            <Col md={10} style={{marginLeft:20}}>
-                <Pagination totalPosts={stocks.stocks.length} postsPerPages={postsPerPage}
-                            setCurrentPage={setCurrentPage} currentPage={currentPage}/>
-                <StockList stocks={currentPosts}/>
-            </Col>
+            {mode === 1 ? <DataMode webSocket={stompClient} /> : mode === 2 ? <ButtonMode webSocket={stompClient}/> : null}
         </Row>
     );
 });

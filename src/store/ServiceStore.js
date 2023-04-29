@@ -4,7 +4,7 @@ export default class ServiceStore {
 
     constructor() {
         this._services = []
-        this._selected = "Forex"
+        this._selected = null
         //hardcode
         makeAutoObservable(this)
     }
