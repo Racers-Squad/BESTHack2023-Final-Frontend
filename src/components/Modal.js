@@ -1,49 +1,47 @@
 import {observer} from "mobx-react-lite";
 import React, {useContext, useRef, useState} from "react";
-import {Button, Form} from "react-bootstrap";
+import {Button, Form, Modal} from "react-bootstrap";
 import {Context} from "../index";
 import {executeCommand} from "../http/EisApi";
 
-const Modal = observer(({command}) => {
-    const {services} = useContext(Context)
-    const formRef = useRef();
-    const [onHides, setOnHides] = useState(false)
-    const onHide = () =>{
-        setOnHides(!onHides)
-    }
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formData = new FormData(formRef.current);
-        const result = []
-        for (let [id, name, value] of formData) {
-            result.push({id:id, name:name, value:value})
-        }
-        executeCommand({id:command.id, args: result}, services.selected)
+const MyModal = observer(({show,onHide}) => {
+    const {services, modal} = useContext(Context)
+    const [formValues, setFormValues] = useState([]);
+
+    const handleInputChange = (e,id, index) => {
+        const { name, value } = e.target;
+        const newValues = [...formValues];
+        newValues[index] = { id, value };
+        setFormValues(newValues);
     };
 
+    const handleSubmit = () => {
+        let result = []
+        formValues.map((val)=> result.push({id:val.id, value:val.value}))
+        executeCommand({id: modal.command.id, args:result})
+    };
     return (
-        <Modal
-            show={true}
-            onHide={onHide}
-            centered
-        >
-            <Modal.Header closeButton>
+        <Modal centered show={show}>
+            <Modal.Header>
                 <Modal.Title id="contained-modal-title-vcenter">
                     Введите параметры команды
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form ref={formRef}>
-                    {command.attributes.map(attribute =><Form.Control placeholder={attribute.hint} id={attribute.id} type="text" name={attribute.caption}/>)}
-                    <Button type="submit" onSubmit={handleSubmit} onClick={onHide}>Submit</Button>
+                <Form>
+                    {modal.command.params.map((attr, index) => <Form.Control value={formValues[index]?.value || ""}
+                                                                    onChange={(e) => handleInputChange(e,attr.id, index)} style={{marginBottom:10}} key={attr.id} placeholder={attr.hint} id={attr.id}
+                                                                    type="text"
+                                                                    name={attr.caption}/>)}
+                    <Button variant="outline-danger" style={{float:"left", marginTop:10}} onClick={onHide}>Close</Button>
+                    <Button variant="outline-success" style={{float:"right", marginTop:10}} onClick={() => {
+                        handleSubmit()
+                    }}>Execute</Button>
                 </Form>
             </Modal.Body>
-            <Modal.Footer>
-                <Button variant="outline-danger" onClick={onHide}>Закрыть</Button>
-            </Modal.Footer>
         </Modal>
     );
 });
 
 
-export default Modal;
+export default MyModal;

@@ -1,26 +1,35 @@
 import React, {useState} from 'react';
 import {observer} from "mobx-react-lite";
+import SockJS from "sockjs-client";
+import {Stomp} from "@stomp/stompjs";
 
-const DataMode = observer(({webSocket}) => {
+const DataMode = observer(({userId}) => {
     const [items, setItems]
         = useState({caption: '', fields: [], fullOrIncrement: false, dataRows: []})
-    webSocket.subscribe('/topic/stock', (message) => {
+    const socket = new SockJS('http://localhost:2728/ws');
+    const stompClient = Stomp.over(socket);
+    stompClient.connect({}, () => {
+        console.log('STOMP connection opened.');
+    });
+    stompClient.subscribe('/user/' + userId + '/queue/events', (message) => {
         setItems(JSON.parse(message.body).map(Number));
     });
     const getData = (item) => {
         if (!item.incrementDelete) {
             return <tr>
-                <td>{item.field}</td>
-                <td>{item.data}</td>
+                {item.map(value => <td>{value.value}</td>)}
             </tr>
         }
     }
     return (<table>
-        <tbody>
+        {(items !== null) && <tbody>
+        <tr>{items.fields.map(item => (
+            <td>{item}</td>
+        ))}</tr>
         {(items.fullOrIncrement || items.data.length !== 0) && items.map(item => (
             getData(item)
         ))}
-        </tbody>
+        </tbody>}
     </table>);
 });
 

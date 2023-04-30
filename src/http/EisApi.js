@@ -5,6 +5,6 @@ export const getModeOfData = async (eis) => {
     return data
 }
 export const executeCommand = async (command, id) =>{
-    const {data} = await $host.post("/eis/" + id + "/execute", command)
+    const {data} = await $host.post("/" + id + "/execute", command)
     return data
 }

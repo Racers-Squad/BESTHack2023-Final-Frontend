@@ -14,24 +14,29 @@ import {Stomp} from "@stomp/stompjs";
 
 const MainPage = observer(() => {
     const {services, stocks} = useContext(Context)
-    const [mode, setMode] = useState({mode:0, methods:''})
-    const socket = new SockJS('http://localhost:2728/ws');
-    const stompClient = Stomp.over(socket);
+    const [mode, setMode] = useState({mode: 0, methods: ''})
+    const [userId, setUserId] = useState(null)
 
     useEffect(() => {
         $host.get('/eis/services').then((response) => {
             services.setServices(response.data)
         })
     }, [])
-    useEffect(() => {
-        stompClient.connect({}, () => {
-            console.log('STOMP connection opened.');
-        });
-    }, [services.selected]);
-
+    const getState = (mode) =>{
+        switch (mode){
+            case 1:
+                return <DataMode userId={userId}/>
+            case 2:
+                return <ButtonMode userId={userId} commands={services.commands}/>
+            default:
+                return null
+        }
+    }
     useEffect(() => {
         getModeOfData(services.selected).then(data => {
             setMode(data)
+            services.setCommands(data.methods)
+            setUserId(data.userId)
         })
     }, [services.selected])
 
@@ -40,7 +45,10 @@ const MainPage = observer(() => {
             <Col md={1} className="mt-2" style={{width: 250}}>
                 <TypeBar/>
             </Col>
-            {mode === 1 ? <DataMode webSocket={stompClient} /> : mode === 2 ? <ButtonMode webSocket={stompClient}/> : null}
+            <Col>
+                {getState(mode.mode)}
+            </Col>
+
         </Row>
     );
 });
